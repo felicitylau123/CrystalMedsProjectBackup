@@ -1,0 +1,95 @@
+﻿@* @page "/promotions/"
+@using CrystalMeds.Client.Static
+@using CrystalMeds.Shared.Domain
+@using CrystalMeds.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.JSInterop
+@using System.Net.Http.Json
+@inject NavigationManager Navigation
+@page "/promotions"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
+
+<h3 class="card-title">Promotions</h3>
+<a href="/promotions/create" class="btn btn-secondary">
+    <span class="oi oi-plus"></span>
+    Create New Promotion
+</a>
+@if (Promotions == null)
+{
+    <div class="alert alert-info">Loading Promotions...</div>
+}
+else
+{
+    <table class="table table-responsive" id="promotionsTable">
+        <thead>
+            <tr>
+                <th>Promotion Name</th>
+                <th>Promotion Amount</th>
+             @*    <th>Product Name</th> *@
+@*                 <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var promotion in Promotions)
+            {
+                <tr>
+                    <td>@promotion.PromotionName</td>
+                    <td>@promotion.PromotionAmount</td>
+                   @*  <td>@promotion.ProductName</td> *@
+                  @*   <td>
+                        <a href="/promotions/view/@promotion.PromotionId" class="btn btn-primary">
+                            <span class="oi oi-eye"></span>
+                        </a>
+                        <a href="/promotions/edit/@promotion.PromotionId" class="btn btn-warning">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="()=>Delete(promotion.PromotionId)">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Promotion>? Promotions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Promotions = await _client.GetFromJsonAsync<List<Promotion>>($"{Endpoints.PromotionsEndpoint}");
+    }
+
+    private async Task Delete(int promotionId)
+    {
+        if (Promotions != null)
+        {
+            var promotion = Promotions.First(q => q.PromotionId == promotionId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {promotion.PromotionName}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.PromotionsEndpoint}/{promotionId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#promotionsTable");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+        js.InvokeVoidAsync("DataTablesDispose", "#promotionsTable");
+    }
+}
+
+ *@

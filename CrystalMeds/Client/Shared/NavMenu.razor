@@ -1,0 +1,100 @@
+﻿@inject NavigationManager Navigation
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">CrystalMeds</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/profile" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Hello,@context.User.Identity?.Name!
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="#" @onclick="BeginLogOut" Match=" NavLinkMatch.All">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Log out
+                    </NavLink>
+                </div>
+                @* <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
+                <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button> *@
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/register" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="authentication/login" Match=" NavLinkMatch.All">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> Log in
+                    </NavLink>
+                </div>
+                @*  <a href="authentication/register">Register</a>
+                <a href="authentication/login">Log in</a> *@
+            </NotAuthorized>
+        </AuthorizeView>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="authentication/profile">
+                <span class="oi oi-person" aria-hidden="true"></span> Account
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cartpage">
+                <span class="oi oi-cart" aria-hidden="true"></span> Cart
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="category">
+                <span class="oi oi-tags" aria-hidden="true"></span> Category
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="products">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Products
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="customers">
+                <span class="oi oi-people" aria-hidden="true"></span> Customers
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="prescriptions">
+                <span class="oi oi-file" aria-hidden="true"></span> Prescription
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="orders">
+                <span class="oi oi-list" aria-hidden="true"></span> Order
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+    private void BeginLogOut()
+    {
+        Navigation.NavigateToLogout("authentication/logout");
+    }
+}

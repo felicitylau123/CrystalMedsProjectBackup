@@ -1,0 +1,150 @@
+﻿@* @page "/prescriptions/create/"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create new prescriptions</h3>
+<hr />
+<br />
+
+<EditForm Model="@prescription" OnValidSubmit="CreatePrescription">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Patient Name: </label>
+        <div>
+            <InputText @bind-Value="prescription.PatientName" class="form-control">
+                <InputText value="">-- enter patient name --</InputText>
+            </InputText>
+            <ValidationMessage For="@(() => prescription.PatientName)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Prescription Description: </label>
+        <div>
+            <InputText @bind-Value="prescription.PrescriptionDescription" class="form-control" />
+            <ValidationMessage For="@(() => prescription.PrescriptionDescription)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Customer ID: </label>
+        <div>
+            <InputNumber @bind-Value="prescription.CustomerId" class="form-control" />
+            <ValidationMessage For="@(() => prescription.CustomerId)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create prescription
+    </button>
+</EditForm>
+
+
+@code {
+    Prescription prescription = new Prescription();
+
+    private IList<Prescription>? Prescriptions;
+    protected async override Task OnInitializedAsync()
+    {
+        Prescriptions = await _client.GetFromJsonAsync<List<Prescription>>($"{Endpoints.PrescriptionsEndpoint}");
+    }
+
+
+    private async Task CreatePrescription()
+    {
+        await _client.PostAsJsonAsync(Endpoints.PrescriptionsEndpoint, prescription);
+        _navManager.NavigateTo("/prescriptions/");
+}
+} *@
+@page "/prescriptions/create"
+@using CrystalMeds.Shared.Domain
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create New Prescription</h3>
+<hr />
+<br />
+<EditForm Model="@prescription" OnValidSubmit="CreatePrescription">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Patient Name: </label>
+        <div>
+            <InputSelect @bind-Value="prescription.CustomerId" class="form-control">
+                <option value="">-- select patient --</option>
+                @if (Customers != null)
+            {
+                    foreach (var customer in Customers)
+                {
+                        <option value="@customer.CustomerId">@customer.UserName</option>
+                }
+            }
+            </InputSelect>
+            <ValidationMessage For="@(() => prescription.PatientName)" />
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label>Prescription Description: </label>
+        <div>
+            <InputText @bind-Value="prescription.PrescriptionDescription" class="form-control" />
+            <ValidationMessage For="@(() => prescription.PrescriptionDescription)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Customer Id: </label>
+        <div>
+            <InputNumber @bind-Value="prescription.CustomerId" class="form-control" />
+            <ValidationMessage For="@(() => prescription.CustomerId)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create Prescription
+    </button>
+</EditForm>
+
+@code {
+    Prescription prescription = new Prescription();
+    private IList<Customer>? Customers;
+    private IList<Prescription>? Prescriptions;
+    protected async override Task OnInitializedAsync()
+    {
+        Customers = await _client.GetFromJsonAsync<List<Customer>>($"{Endpoints.CustomersEndpoint}");
+    }
+
+    private async Task CreatePrescription()
+    {
+        // Ensure that the selected category is not null
+        if (prescription.PatientName != null)
+        {
+            // Retrieve the selected category from the Categories list
+            var selectedCustomer = Customers.FirstOrDefault(c => c.CustomerId == prescription.CustomerId);
+
+            prescription.PatientName = selectedCustomer?.UserName;
+        }
+
+        await _client.PostAsJsonAsync(Endpoints.PrescriptionsEndpoint, prescription);
+        _navManager.NavigateTo("/prescriptions/");
+    }
+}
+   @*  // private IList<Prescription>? Prescriptions;
+    // protected async override Task OnInitializedAsync()
+    // {
+    //     Prescriptions = await _client.GetFromJsonAsync<List<Prescription>>($"{Endpoints.PrescriptionsEndpoint}");
+    // }
+    // private async Task CreatePrescription()
+    // {
+    //     await _client.PostAsJsonAsync($"{Endpoints.PrescriptionsEndpoint}", prescription);
+    //     _navManager.NavigateTo("/prescriptions/");
+    // }
+
+
+}
+ *@

@@ -1,0 +1,185 @@
+﻿@* @page "/category/create/"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create New Category</h3>
+<hr />
+<br />
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputText @bind-Value="category.CategoryName" class="form-control" />
+            <ValidationMessage For="@(() => category.CategoryName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create Category
+    </button>
+</EditForm>
+
+@code {
+    Category category = new Category();
+    private IList<Category>? Categories;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+    }
+
+    // private async Task CreateCategory()
+    // {
+    //     await _client.PostAsJsonAsync(Endpoints.CategoriesEndpoint, category);
+    //     _navManager.NavigateTo("/category/");
+    // }
+    private async Task CreateCategory()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.CategoriesEndpoint}/{category.CategoryId}", category);
+        _navManager.NavigateTo("/category/");
+    }
+
+}
+ *@
+
+
+@page "/categories/create/"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create new Category</h3>
+<hr />
+<br />
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <div>
+            <InputText @bind-Value="category.CategoryName" class="form-control">
+                <InputText value="">-- select name --</InputText>
+            </InputText>
+            <ValidationMessage For="@(() => category.CategoryName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create Category
+    </button>
+</EditForm>
+
+@code {
+   
+        Category category = new Category();
+        private IList<Category>? Categories;
+
+        protected async override Task OnInitializedAsync()
+        {
+            Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        }
+
+        private async Task CreateCategory()
+        {
+            await _client.PostAsJsonAsync(Endpoints.CategoriesEndpoint, category);
+            _navManager.NavigateTo("/category/");
+        }
+    
+
+}
+
+@* 
+@page "/categories/create"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>Create New Category</h3>
+
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputText @bind-Value="category.CategoryName" class="form-control" />
+            <ValidationMessage For="@(() => category.CategoryName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create Category</button>
+</EditForm>
+
+@if (created)
+{
+    <p>Category created successfully!</p>
+}
+
+@code {
+    Category category = new Category();
+    bool created = false;
+
+    private async Task CreateCategory()
+    {
+        try
+        {
+            await _client.PostAsJsonAsync("/api/category", category);
+            created = true;
+            // Optionally, navigate to another page or reset the form.
+            _navManager.NavigateTo("/category");
+        }
+        catch (Exception ex)
+        {
+            // Log or display the exception details for debugging.
+            Console.WriteLine($"Exception during category creation: {ex.Message}");
+        }
+    }
+} *@
+@* 
+@page "/categories/create"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@using CrystalMeds.Shared.Domain;
+
+<h3>Create New Category</h3>
+
+<h3 class="card-title">Create New Category</h3>
+<hr />
+<br />
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputDate @bind-Value="category.CategoryName" class="form-control" />
+            <ValidationMessage For="@(() => category.CategoryName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create Category
+    </button>
+</EditForm>
+
+@code {
+    Category category = new Category();
+
+    private IList<Category>? Categories;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+    }
+
+    private async Task CreateCategory()
+    {
+        await _client.PostAsJsonAsync(Endpoints.CategoriesEndpoint, category);
+        _navManager.NavigateTo("/category/");
+    }
+} *@

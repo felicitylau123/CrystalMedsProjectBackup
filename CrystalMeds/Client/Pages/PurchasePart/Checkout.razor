@@ -1,0 +1,79 @@
+﻿@page "/checkout"
+@inject NavigationManager Navigation
+@inject HttpClient _client
+@inject IJSRuntime js
+
+<h3>Checkout</h3>
+
+@if (cartItems == null || cartItems.Count == 0)
+{
+    <p>Your shopping cart is empty. Please add items before proceeding to checkout.</p>
+}
+else
+{
+    <table class="table table-responsive" id="checkoutTable">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in cartItems)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.ProductPrice</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.ProductPrice * item.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p>Total Amount: $@(cartItems.Sum(item => item.ProductPrice * item.Quantity))</p>
+
+    <div>
+        <label for="shippingAddress">Shipping Address:</label>
+        <input type="text" id="shippingAddress" />
+
+        <label for="paymentMethod">Payment Method:</label>
+        <select id="paymentMethod">
+            <option value="creditCard">Credit Card</option>
+            <option value="paypal">PayPal</option>
+        </select>
+    </div>
+    <button class="btn btn-success" @onclick="BackToCart">Back To Cart</button>
+    <button class="btn btn-success" @onclick="CompletePurchase">Complete Purchase</button>
+    <button class="btn btn-success" @onclick="SelfPickup">Self Pickup</button>
+}
+
+@code {
+    private List<CartItem> cartItems;
+    
+    protected override void OnInitialized()
+    {
+        
+        cartItems = new List<CartItem>
+        {
+            new CartItem { ProductId = 1, ProductName = "Crystal meds skin cleanser", ProductPrice = 15, Quantity = 1 },
+        };
+    }
+
+    private void CompletePurchase()
+    {
+        
+        cartItems.Clear();
+        Navigation.NavigateTo("/products");
+    }
+    private void BackToCart()
+    {
+        Navigation.NavigateTo("/cartpage");
+    }
+    private void SelfPickup()
+    {
+        Navigation.NavigateTo("/cartpage");
+    }
+}

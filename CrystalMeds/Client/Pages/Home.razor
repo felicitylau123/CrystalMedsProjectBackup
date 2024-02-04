@@ -1,0 +1,49 @@
+﻿@page "/"
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+<PageTitle>Index</PageTitle>
+<h1>Welcome to Crystal Meds</h1>
+
+<h1>
+    @if (user != null && user.Identity.IsAuthenticated)
+    {
+        <span>Hello, @user.Identity.Name!</span>
+    }
+    else
+    {
+        <span>Hello, Customers!</span>
+    }
+</h1>
+
+@if (user != null && user.Identity.IsAuthenticated)
+{
+    <p>A perfect place for all your healthcare needs. </p>
+}
+else
+{
+    <p>You are not logged in.</p>
+}
+
+<footer>
+    <p>&copy; 2024 Crystal Meds. All rights reserved. | </p>
+</footer>
+
+
+@code {
+    private ClaimsPrincipal user;
+
+    // This method will be invoked when the component is initialized
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve the user information
+        var authState = await AuthenticationStateProvider;
+        user = authState.User;
+    }
+
+    // This method is injected with AuthenticationStateProvider using cascading authentication
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationStateProvider { get; set; }
+}
+

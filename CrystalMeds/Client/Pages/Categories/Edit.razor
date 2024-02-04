@@ -1,0 +1,96 @@
+﻿@* @page "/categories/edit/{id:int}"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>Edit Category</h3>
+<FormComponent ButtonText="Update" OnValidSubmit="EditCategory" category="category" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    Category? category = new Category();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{id}");
+    }
+
+    async Task EditCategory()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.CategoriesEndpoint}/{id}", category);
+        _navManager.NavigateTo("/category/");
+    }
+}
+ *@
+
+@*  @page "/categories/edit/{categoryId:int}"
+@using CrystalMeds.Shared.Domain
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Edit Category</h3>
+<hr />
+<br />
+<EditForm Model="@category" OnValidSubmit="UpdateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <div>
+            <InputText @bind-Value="category.CategoryName" class="form-control" />
+            <ValidationMessage For="@(() => category.CategoryName)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Update Category
+    </button>
+</EditForm>
+
+@code {
+    private Category category = new Category();
+
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{CategoryId}");
+    }
+
+    private async Task UpdateCategory()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.CategoriesEndpoint}/{CategoryId}", category);
+        _navManager.NavigateTo("/category/");
+    }
+}
+ *@
+
+
+
+@page "/categories/edit/{id:int}"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>Edit Category</h3>
+<FormComponent ButtonText="Update" OnValidSubmit="EditCategory" category="category" />
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    Category? category = new Category();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{id}");
+    }
+
+    async Task EditCategory()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.CategoriesEndpoint}/{id}", category);
+        _navManager.NavigateTo("/category/");
+    }
+}
+
+

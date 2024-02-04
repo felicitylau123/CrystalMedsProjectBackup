@@ -1,0 +1,94 @@
+﻿@page "/customers/"
+@using CrystalMeds.Client.Static;
+@using CrystalMeds.Shared.Domain;
+@using CrystalMeds.Client.Services
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.JSInterop;
+@using System.Net.Http.Json;
+@inject HttpClient _client
+@inject IJSRuntime js
+@inject HttpInterceptorService _interceptor
+@attribute [Authorize]
+@implements IDisposable
+
+<h3 class="card-title">customers</h3>
+<a href="/customers/create" class="btn btn-secondary">
+	<span class="oi oi-plus"></span>
+	Create New customer
+</a>
+@if (Customers == null)
+{
+	<div class="alert alert-info">Loading customers...</div>
+
+}
+else
+{
+	<table class="table table-responsive" id="customersTable">
+		<thead>
+			<tr>
+				<th>Customer ID</th>
+				<th>UserName</th>
+				<th>Email Address</th>
+				<th>Contact Number</th>
+				<th>Address</th>
+				<th>actions</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var customer in Customers)
+			{
+				<tr>
+					<td>@customer.CustomerId</td> 
+					<td>@customer.UserName</td>
+					<td>@customer.Email </td>
+					<td>@customer.PhoneNumber</td>
+					<td>@customer.Address</td>
+					<td>
+						<a href="/customers/view/@customer.CustomerId" class="btn btn-primary">
+							<span class="oi oi-eye"></span>
+						</a>
+						<a href="/customers/edit/@customer.CustomerId" class="btn btn-warning">
+							<span class="oi oi-pencil"></span>
+						</a>
+						<button class="btn btn-danger" @onclick="@(()=>Delete(customer.CustomerId))">
+							<span class="oi oi-delete"></span>
+						</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+
+}
+@code {
+	private List<Customer>? Customers;
+	protected async override Task OnInitializedAsync()
+	{
+		Customers = await _client.GetFromJsonAsync<List<Customer>>($"{Endpoints.CustomersEndpoint}");
+	}
+	async Task Delete(int customerId)
+	{
+		if (Customers != null)
+		{
+			var customer = Customers.First(q => q.CustomerId == customerId);
+			var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {customer.UserName}?");
+			if (confirm)
+			{
+				await _client.DeleteAsync($"{Endpoints.CustomersEndpoint}/{customerId}");
+				await OnInitializedAsync();
+			}
+		}
+	}
+	protected async override Task OnAfterRenderAsync(bool firstRender)
+	{
+		await js.InvokeVoidAsync("AddDataTable", "#customersTable");
+	}
+	public void Dispose()
+	{
+		_interceptor.DisposeEvent();
+		js.InvokeVoidAsync("DataTablesDispose", "#customersTable");
+	}
+}

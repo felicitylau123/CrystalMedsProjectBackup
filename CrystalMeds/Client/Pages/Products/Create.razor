@@ -1,0 +1,84 @@
+﻿@page "/products/create/"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create new products</h3>
+<hr />
+<br />
+<EditForm Model="@product" OnValidSubmit="CreateProduct">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div class="form-group">
+		<label>Name: </label>
+		<div>
+			<InputText @bind-Value="product.ProductName" class="form-control">
+				<InputText value="">-- select name --</InputText>
+			</InputText>
+			<ValidationMessage For="@(() => product.ProductName)" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>price: </label>
+		<div>
+			<InputNumber @bind-Value="product.ProductPrice" class="form-control" />
+			<ValidationMessage For="@(() => product.ProductPrice)" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>Description: </label>
+		<div>
+			<InputText @bind-Value="product.ProductDescription" class="form-control" />
+			<ValidationMessage For="@(() => product.ProductDescription)" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>Category: </label>
+		<div>
+			<InputSelect @bind-Value="product.CategoryId" class="form-control">
+				<option value="">-- select category --</option>
+				@if (Categories != null)
+				{
+					foreach (var category in Categories)
+					{
+						<option value="@category.CategoryId">@category.CategoryName</option>
+					}
+				}
+			</InputSelect>
+			<ValidationMessage For="@(() => product.CategoryId)" />
+		</div>
+	</div>
+	<button type="submit" class="btn btn-success btn-block">
+		Create product
+	</button>
+</EditForm>
+
+
+
+@code {
+	Product product = new Product();
+
+	private IList<Category>? Categories;
+	protected async override Task OnInitializedAsync()
+	{
+		Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+	}
+
+	private async Task CreateProduct()
+	{
+		// Ensure that the selected category is not null
+		if (product.CategoryId != null)
+		{
+			// Retrieve the selected category from the Categories list
+			var selectedCategory = Categories.FirstOrDefault(c => c.CategoryId == product.CategoryId);
+
+			product.ProductCategory = selectedCategory?.CategoryName;
+		}
+
+		await _client.PostAsJsonAsync(Endpoints.ProductsEndpoint, product);
+		_navManager.NavigateTo("/products/");
+	}
+}

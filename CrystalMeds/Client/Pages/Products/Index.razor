@@ -1,0 +1,322 @@
+﻿@* @page "/products/"
+@using CrystalMeds.Client.Static;
+@using CrystalMeds.Shared.Domain;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.JSInterop;
+@using System.Net.Http.Json;
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+
+<h3 class="card-title">products</h3>
+<a href="/products/create" class="btn btn-secondary">
+	<span class="oi oi-plus"></span>
+	Create New product
+</a>
+@if (Products == null)
+{
+	<div class="alert alert-info">Loading products...</div>
+
+}
+else
+{
+	<table class="table table-responsive" id="productsTable">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Add to Cart</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var product in Products)
+			{
+				<tr>
+					<td>@product.ProductName<br />price: $@product.ProductPrice<br />Description: @product.ProductDescription<br />category: @product.ProductCategory</td>
+					<td>
+						<input type="number" name="quantity" value="1" min="1" />
+						<button class="btn btn-success" @onclick="@(() => AddToCart(product))">Add to Cart</button>
+					</td>
+					<td>
+						<a href="/products/view/@product.ProductId" class="btn btn-primary">
+							<span class="oi oi-eye"></span>
+						</a>
+						<a href="/products/edit/@product.ProductId" class="btn btn-warning">
+							<span class="oi oi-pencil"></span>
+						</a>
+						<button class="btn btn-danger" @onclick="@(()=>Delete(product.ProductId))">
+							<span class="oi oi-delete"></span>
+						</button>
+						</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	
+
+}
+@code {
+// 	private List<Product>? Products;
+// 	protected async override Task OnInitializedAsync()
+// 	{
+// 		Products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+// 		// Convert products to ProductViewModel
+// 		Products = products?.Select(p => new ProductViewModel
+// 			{
+// 				ProductId = p.ProductId,
+// 				ProductName = p.ProductName,
+// 				ProductPrice = p.ProductPrice,
+// 				ProductDescription = p.ProductDescription,
+// 				ProductCategory = p.ProductCategory,
+// 				Quantity = 1 // Default quantity
+// 			}).ToList();
+// 	}
+// }
+// 	async Task Delete(int productId)
+// 	{
+// 		if (Products != null)
+// 		{
+// 			var product = Products.First(q => q.ProductId == productId);
+// 			var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {product.ProductName}?");
+// 			if (confirm)
+// 			{
+// 				await _client.DeleteAsync($"{Endpoints.ProductsEndpoint}/{productId}");
+// 				await OnInitializedAsync();
+// 			}
+// 		}
+// 	}
+// 	private async Task AddToCart(Product product)
+// 	{
+// 		// Assuming you have a method in your UnitOfWork to add a product to the cart
+// 		// You should adjust this based on your actual implementation
+
+// 		await _client.PostAsJsonAsync($"{Endpoints.CartItemsEndpoint}", new CartItem
+// 			{
+// 				ProductId = product.ProductId,
+// 				Quantity = product.Quantity, // You may want to adjust this based on user input
+// 											 // Other properties you need for a cart item
+// 			});
+
+// 		// Optionally, you can show a notification or perform other actions after adding to the cart
+
+// 		// Refresh the products after adding to the cart
+// 		Products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+// 	}
+
+// 	protected async override Task OnAfterRenderAsync(bool firstRender)
+// 	{
+// 		await js.InvokeVoidAsync("AddDataTable", "#productsTable");
+// 	}
+// 	public void Dispose()
+// 	{
+// 		js.InvokeVoidAsync("DataTablesDispose", "#productsTable");
+// 	}
+    private List<ProductViewModel>? Products;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+
+        // Convert products to ProductViewModel
+        Products = products?.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                ProductPrice = p.ProductPrice,
+                ProductDescription = p.ProductDescription,
+                ProductCategory = p.ProductCategory,
+                Quantity = 1 // Default quantity
+            }).ToList();
+    }
+
+    async Task Delete(int productId)
+    {
+        if (Products != null)
+        {
+            var product = Products.First(q => q.ProductId == productId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {product.ProductName}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.ProductsEndpoint}/{productId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    private async Task AddToCart(ProductViewModel product)
+    {
+        await _client.PostAsJsonAsync($"{Endpoints.CartItemsEndpoint}", new CartItem
+            {
+                ProductId = product.ProductId,
+                Quantity = product.Quantity,
+                // Other properties you need for a cart item
+            });
+
+        // Optionally, you can show a notification or perform other actions after adding to the cart
+
+        // Refresh the products after adding to the cart
+        Products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#productsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#productsTable");
+    }
+}
+	 *@
+
+
+@page "/products/"
+@using CrystalMeds.Client.Static;
+@using CrystalMeds.Shared.Domain;
+@using CrystalMeds.Client.Services
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.JSInterop;
+@using System.Net.Http.Json;
+@inject NavigationManager Navigation
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
+
+<h3 class="card-title">products</h3>
+<a href="/products/create" class="btn btn-secondary">
+	<span class="oi oi-plus"></span>
+	Create New product
+</a>
+@if (Products == null)
+{
+	<div class="alert alert-info">Loading products...</div>
+}
+else
+{
+	<table class="table table-responsive" id="productsTable">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var product in Products)
+			{
+				<tr>
+					<td>@product.ProductName<br />price: $@product.ProductPrice<br />Description: @product.ProductDescription<br />category: @product.ProductCategory</td>
+				
+					<td>
+						<a href="/products/view/@product.ProductId" class="btn btn-primary">
+							<span class="oi oi-eye"></span>
+						</a>
+						<a href="/products/edit/@product.ProductId" class="btn btn-warning">
+							<span class="oi oi-pencil"></span>
+						</a>
+						<button class="btn btn-danger" @onclick="@(() => Delete(product.ProductId))">
+							<span class="oi oi-delete"></span>
+						</button>
+                        <input type="number" id="quantity" value="1" min="1">
+                        <a href="/cartpage" class="btn btn-primary">
+                        <span class="oi oi-cart"></span> </a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+    private List<ProductViewModel>? Products;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+
+        // Convert products to ProductViewModel
+        Products = products?.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                ProductPrice = p.ProductPrice,
+                ProductDescription = p.ProductDescription,
+                ProductCategory = p.ProductCategory,
+                Quantity = 1 // Default quantity
+            }).ToList() ?? new List<ProductViewModel>();
+    }
+    private void RemoveFromCart(int productId)
+    {
+        // Remove item from the cart
+        var itemToRemove = Products.FirstOrDefault(item => item.ProductId == productId);
+        if (itemToRemove != null)
+        {
+            Products.Remove(itemToRemove);
+        }
+    }
+    private void Checkout()
+    {
+        // Perform checkout logic
+        // Navigate to the cart page after checkout
+        Navigation.NavigateTo("/cartpage");
+    }
+    async Task Delete(int productId)
+    {
+        if (Products != null)
+        {
+            var product = Products.First(q => q.ProductId == productId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {product.ProductName}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.ProductsEndpoint}/{productId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    private async Task AddToCart(ProductViewModel product)
+    {
+        var response = await _client.PostAsJsonAsync($"{Endpoints.CartItemsEndpoint}", new CartItem
+            {
+                ProductId = product.ProductId,
+                Quantity = product.Quantity,
+                // Other properties you need for a cart item
+            });
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Optionally, you can show a notification or perform other actions after adding to the cart
+
+            // Navigate to the cart page after adding to the cart
+            Navigation.NavigateTo("/cartpage");
+        }
+        else
+        {
+            // Handle the case where adding to the cart failed
+            // You might want to display an error message or take other actions
+            // For example, you can show a notification with a failure message
+        }
+
+
+        // Optionally, you can show a notification or perform other actions after adding to the cart
+
+        // Refresh the products after adding to the cart
+        await OnInitializedAsync();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#productsTable");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
+        js.InvokeVoidAsync("DataTablesDispose", "#productsTable");
+    }
+}

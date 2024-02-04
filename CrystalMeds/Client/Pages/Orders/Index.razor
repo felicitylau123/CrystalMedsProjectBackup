@@ -1,0 +1,92 @@
+﻿@page "/orders/"
+
+@using CrystalMeds.Client.Static;
+@using CrystalMeds.Shared.Domain;
+@using CrystalMeds.Client.Services
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.JSInterop;
+@using System.Net.Http.Json;
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
+
+<h3 class="card-title">Order</h3>
+<a href="/orders/create" class="btn btn-secondary">
+	<span class="oi oi-plus"></span>
+	Create New Order
+</a>
+@if (Orders == null)
+{
+    <div class="alert alert-info">Loading orders...</div>
+}
+else
+{
+    <table class="table table-responsive" id="ordersTable">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Total Price</th>
+                <th>Product ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Orders)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.OrderDate.ToShortDateString()</td>
+                    <td>@order.TotalPrice</td>
+                    <td>@order.ProductId</td>
+                    <td>
+                        <a href="/orders/view/@order.OrderId" class="btn btn-primary">
+                            <span class="oi oi-eye"></span>
+                        </a>
+                        <a href="/orders/edit/@order.OrderId" class="btn btn-warning">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(order.OrderId))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+	private List<Order>? Orders;
+	protected async override Task OnInitializedAsync()
+	{
+		Orders = await _client.GetFromJsonAsync<List<Order>>($"{Endpoints.OrdersEndpoint}");
+	}
+	async Task Delete(int OrderId)
+	{
+		if (Orders != null)
+		{
+			var Order = Orders.First(q => q.OrderId == OrderId);
+			var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {Order.OrderId}?");
+			if (confirm)
+			{
+				await _client.DeleteAsync($"{Endpoints.OrdersEndpoint}/{OrderId}");
+				await OnInitializedAsync();
+			}
+		}
+	}
+	protected async override Task OnAfterRenderAsync(bool firstRender)
+	{
+		await js.InvokeVoidAsync("AddDataTable", "#ordersTable");
+	}
+	public void Dispose()
+	{
+        _interceptor.DisposeEvent();
+		js.InvokeVoidAsync("DataTablesDispose", "#ordersTable");
+	}
+
+	}
+	

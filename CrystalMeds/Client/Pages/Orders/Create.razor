@@ -1,0 +1,66 @@
+﻿@page "/orders/create/"
+@using CrystalMeds.Shared.Domain;
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3 class="card-title">Create New Order</h3>
+<hr />
+<br />
+<EditForm Model="@order" OnValidSubmit="CreateOrder">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Order Date: </label>
+        <div>
+            <InputDate @bind-Value="order.OrderDate" class="form-control" />
+            <ValidationMessage For="@(() => order.OrderDate)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Total Price: </label>
+        <div>
+            <InputNumber @bind-Value="order.TotalPrice" class="form-control" />
+            <ValidationMessage For="@(() => order.TotalPrice)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Product: </label>
+        <div>
+            <InputSelect @bind-Value="order.ProductId" class="form-control">
+                <option value="">-- select product --</option>
+                @if (Products != null)
+                {
+                    foreach (var product in Products)
+                    {
+                        <option value="@product.ProductId">@product.ProductName</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => order.ProductId)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">
+        Create Order
+    </button>
+</EditForm>
+
+@code {
+    Order order = new Order();
+
+    private IList<Product>? Products;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Products = await _client.GetFromJsonAsync<List<Product>>($"{Endpoints.ProductsEndpoint}");
+    }
+
+    private async Task CreateOrder()
+    {
+        await _client.PostAsJsonAsync(Endpoints.OrdersEndpoint, order);
+        _navManager.NavigateTo("/orders/");
+    }
+}
