@@ -210,7 +210,7 @@ else
 			@foreach (var product in Products)
 			{
 				<tr>
-					<td>@product.ProductName<br />price: $@product.ProductPrice<br />Description: @product.ProductDescription<br />category: @product.ProductCategory</td>
+                    <td>@product.ProductName<br />price: $@product.ProductPrice<br />Description: @product.ProductDescription</td>
 				
 					<td>
 						<a href="/products/view/@product.ProductId" class="btn btn-primary">
