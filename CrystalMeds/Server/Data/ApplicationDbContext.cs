@@ -31,7 +31,6 @@ namespace CrystalMeds.Server.Data
 		{
 			base.OnModelCreating(builder);
 			builder.ApplyConfiguration(new CategorySeedConfiguration());
-			builder.ApplyConfiguration(new ProductSeedConfiguration());
 			builder.ApplyConfiguration(new RoleSeedConfiguration());
 			builder.ApplyConfiguration(new UserRoleSeedConfiguration());
 			builder.ApplyConfiguration(new UserSeedConfiguration());

@@ -60,7 +60,7 @@ namespace CrystalMeds.Server.Migrations
                 {
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CategoryName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,10 +73,10 @@ namespace CrystalMeds.Server.Migrations
                 {
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -139,20 +139,6 @@ namespace CrystalMeds.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Promotions",
-                columns: table => new
-                {
-                    PromotionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PromotionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PromotionAmount = table.Column<float>(type: "real", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Promotions", x => x.PromotionId);
                 });
 
             migrationBuilder.CreateTable(
@@ -267,7 +253,7 @@ namespace CrystalMeds.Server.Migrations
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ProductPrice = table.Column<float>(type: "real", nullable: false),
                     ProductDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -291,7 +277,7 @@ namespace CrystalMeds.Server.Migrations
                     PrescriptionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PatientName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PrescriptionDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrescriptionDescription = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -327,6 +313,26 @@ namespace CrystalMeds.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Promotions",
+                columns: table => new
+                {
+                    PromotionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PromotionName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PromotionAmount = table.Column<float>(type: "real", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Promotions", x => x.PromotionId);
+                    table.ForeignKey(
+                        name: "FK_Promotions_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payments",
                 columns: table => new
                 {
@@ -358,7 +364,7 @@ namespace CrystalMeds.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "08c3b978-c964-417a-b10d-c2edd5037a52", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEF71Aoqj800VdphoP7VfxuHCAH+ilRDWYIXVFsL0Env2RwUPzG3/uW8Tn3quL7xvGg==", null, false, "3c77c734-c31d-4a9a-ac0b-1c4102270012", false, "admin@localhost.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "06630f3d-116d-4384-b024-e3fa33a1ff8a", "admin@localhost.com", false, "Admin", "User", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEHQq1Zu2hFkiKb7jKy2zvEIbOyjSoxP5xzLJ0u+I2NL/C70mJmztZO0tWpRcITqUNQ==", null, false, "65ffa73b-5b64-4521-8912-72d4926c0064", false, "admin@localhost.com" });
 
             migrationBuilder.InsertData(
                 table: "Categories",
@@ -375,38 +381,6 @@ namespace CrystalMeds.Server.Migrations
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "ad2bcf0c-20db-474f-8407-5a6b159518ba", "3781efa7-66dc-47f0-860f-e506d04102e4" });
-
-            migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "ProductId", "CategoryId", "ProductCategory", "ProductDescription", "ProductName", "ProductPrice" },
-                values: new object[,]
-                {
-                    { 1, 1, "skin care", "Neutrogena Hydro Boost Water Gel Cleanser", "Crystal meds skin cleanser", 15f },
-                    { 2, 1, "skin care", "Clinique Dramatically Different Moisturizing Lotion+", "crystal meds skin moisturizers", 22f },
-                    { 3, 1, "skin care", "EltaMD UV Clear Broad-Spectrum SPF 46", "crystal meds sun screen", 12f },
-                    { 4, 1, "skin care", "The Ordinary Niacinamide 10% + Zinc 1%", "crystal meds serum", 20f },
-                    { 5, 1, "skin care", "Skin Perfecting 2% BHA Liquid Exfoliant", "crystal meds exfoliants", 30f },
-                    { 6, 1, "skin care", "for a healthy and glow skin", "crystal meds charcoal mask", 30f },
-                    { 7, 2, "first aid", "and-Aid for covering small cuts and wounds.", "crystal meds adhesive bandages", 5f },
-                    { 8, 2, "first aid", "highest quality cotton for applying ointments or cleaning small areas.", "crystal meds cotton roll", 5f },
-                    { 9, 2, "first aid", "Used for cleaning wounds to prevent infection.", "crystal meds antiseptic solution", 13f },
-                    { 10, 2, "first aid", "eye cream with the essence of avocado for better result", "crystal meds eye cream", 10f },
-                    { 11, 2, "first aid", "high quality gloves. available in all sizes", "crystal meds medical gloves", 15f },
-                    { 12, 3, "pain relief", "relieves pains associated with bones and muscles", "crystal meds pain relief spray", 10f },
-                    { 13, 3, "pain relief", "releives strong headache. faster action.", "crystal meds headache balm", 10f },
-                    { 14, 4, "medicine(with prescriptions)", "Used for mild to moderate pain and to reduce fever. It's generally considered safe when taken as directed, but excessive use can lead to liver damage.", "Acetaminophen (Tylenol)", 20f },
-                    { 15, 4, "medicine(with prescriptions)", " formulated specifically for migraines may contain a combination of pain relievers and caffeine.", "Advil Migraine", 18f },
-                    { 16, 4, "medicine(with prescriptions)", "Over-the-counter muscle relaxants can help alleviate muscle spasms and tension. ", "Zanaflex (Tizanidine)", 15f },
-                    { 17, 4, "medicine(with prescriptions)", "help relieve sneezing, runny nose, and itchy or watery eyes. It may cause drowsiness.", "Robaxin (Methocarbamol)", 15f },
-                    { 18, 4, "medicine(with prescriptions)", "help relieve sneezing, runny nose, and itchy or watery eyes. It may cause drowsiness.", "Benadryl", 15f },
-                    { 19, 4, "medicine(with prescriptions)", "Non-drowsy options for allergy symptoms that may accompany a cold.", "Zyrtec", 15f },
-                    { 20, 4, "medicine(with prescriptions)", "for fever and associated symptoms", "Aleve", 17f },
-                    { 21, 4, "medicine(with prescriptions)", "reduces fever", "panadol", 10f },
-                    { 22, 4, "medicine(with prescriptions)", " Stimulate the pancreas to release more insulin.", "Glibenclamide", 10f },
-                    { 23, 4, "medicine(with prescriptions)", " Reduce glucose reabsorption in the kidneys, leading to increased glucose excretion in the urine.", "Canagliflozin", 10f },
-                    { 24, 4, "medicine(with prescriptions)", "to improve urine flow and reduce symptoms associated with BPH.", "Flomax", 15f },
-                    { 25, 4, "medicine(with prescriptions)", "for severe pain due to kidney stone", "Oxycodone", 15f }
-                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -501,7 +475,13 @@ namespace CrystalMeds.Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryId",
                 table: "Products",
-                column: "CategoryId");
+                column: "CategoryId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Promotions_ProductId",
+                table: "Promotions",
+                column: "ProductId");
         }
 
         /// <inheritdoc />

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrystalMeds.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240130032236_newdb")]
+    [Migration("20240204150834_newdb")]
     partial class newdb
     {
         /// <inheritdoc />
@@ -100,7 +100,7 @@ namespace CrystalMeds.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "08c3b978-c964-417a-b10d-c2edd5037a52",
+                            ConcurrencyStamp = "06630f3d-116d-4384-b024-e3fa33a1ff8a",
                             Email = "admin@localhost.com",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -108,9 +108,9 @@ namespace CrystalMeds.Server.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF71Aoqj800VdphoP7VfxuHCAH+ilRDWYIXVFsL0Env2RwUPzG3/uW8Tn3quL7xvGg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHQq1Zu2hFkiKb7jKy2zvEIbOyjSoxP5xzLJ0u+I2NL/C70mJmztZO0tWpRcITqUNQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3c77c734-c31d-4a9a-ac0b-1c4102270012",
+                            SecurityStamp = "65ffa73b-5b64-4521-8912-72d4926c0064",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -125,7 +125,8 @@ namespace CrystalMeds.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<string>("CategoryName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CategoryId");
 
@@ -166,16 +167,20 @@ namespace CrystalMeds.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CustomerId");
 
@@ -242,7 +247,9 @@ namespace CrystalMeds.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrescriptionDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("PrescriptionId");
 
@@ -270,243 +277,19 @@ namespace CrystalMeds.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<float>("ProductPrice")
                         .HasColumnType("real");
 
                     b.HasKey("ProductId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .IsUnique();
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "Neutrogena Hydro Boost Water Gel Cleanser",
-                            ProductName = "Crystal meds skin cleanser",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "Clinique Dramatically Different Moisturizing Lotion+",
-                            ProductName = "crystal meds skin moisturizers",
-                            ProductPrice = 22f
-                        },
-                        new
-                        {
-                            ProductId = 3,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "EltaMD UV Clear Broad-Spectrum SPF 46",
-                            ProductName = "crystal meds sun screen",
-                            ProductPrice = 12f
-                        },
-                        new
-                        {
-                            ProductId = 4,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "The Ordinary Niacinamide 10% + Zinc 1%",
-                            ProductName = "crystal meds serum",
-                            ProductPrice = 20f
-                        },
-                        new
-                        {
-                            ProductId = 5,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "Skin Perfecting 2% BHA Liquid Exfoliant",
-                            ProductName = "crystal meds exfoliants",
-                            ProductPrice = 30f
-                        },
-                        new
-                        {
-                            ProductId = 6,
-                            CategoryId = 1,
-                            ProductCategory = "skin care",
-                            ProductDescription = "for a healthy and glow skin",
-                            ProductName = "crystal meds charcoal mask",
-                            ProductPrice = 30f
-                        },
-                        new
-                        {
-                            ProductId = 7,
-                            CategoryId = 2,
-                            ProductCategory = "first aid",
-                            ProductDescription = "and-Aid for covering small cuts and wounds.",
-                            ProductName = "crystal meds adhesive bandages",
-                            ProductPrice = 5f
-                        },
-                        new
-                        {
-                            ProductId = 8,
-                            CategoryId = 2,
-                            ProductCategory = "first aid",
-                            ProductDescription = "highest quality cotton for applying ointments or cleaning small areas.",
-                            ProductName = "crystal meds cotton roll",
-                            ProductPrice = 5f
-                        },
-                        new
-                        {
-                            ProductId = 9,
-                            CategoryId = 2,
-                            ProductCategory = "first aid",
-                            ProductDescription = "Used for cleaning wounds to prevent infection.",
-                            ProductName = "crystal meds antiseptic solution",
-                            ProductPrice = 13f
-                        },
-                        new
-                        {
-                            ProductId = 10,
-                            CategoryId = 2,
-                            ProductCategory = "first aid",
-                            ProductDescription = "eye cream with the essence of avocado for better result",
-                            ProductName = "crystal meds eye cream",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 11,
-                            CategoryId = 2,
-                            ProductCategory = "first aid",
-                            ProductDescription = "high quality gloves. available in all sizes",
-                            ProductName = "crystal meds medical gloves",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 12,
-                            CategoryId = 3,
-                            ProductCategory = "pain relief",
-                            ProductDescription = "relieves pains associated with bones and muscles",
-                            ProductName = "crystal meds pain relief spray",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 13,
-                            CategoryId = 3,
-                            ProductCategory = "pain relief",
-                            ProductDescription = "releives strong headache. faster action.",
-                            ProductName = "crystal meds headache balm",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 14,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "Used for mild to moderate pain and to reduce fever. It's generally considered safe when taken as directed, but excessive use can lead to liver damage.",
-                            ProductName = "Acetaminophen (Tylenol)",
-                            ProductPrice = 20f
-                        },
-                        new
-                        {
-                            ProductId = 15,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = " formulated specifically for migraines may contain a combination of pain relievers and caffeine.",
-                            ProductName = "Advil Migraine",
-                            ProductPrice = 18f
-                        },
-                        new
-                        {
-                            ProductId = 16,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "Over-the-counter muscle relaxants can help alleviate muscle spasms and tension. ",
-                            ProductName = "Zanaflex (Tizanidine)",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 17,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "help relieve sneezing, runny nose, and itchy or watery eyes. It may cause drowsiness.",
-                            ProductName = "Robaxin (Methocarbamol)",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 18,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "help relieve sneezing, runny nose, and itchy or watery eyes. It may cause drowsiness.",
-                            ProductName = "Benadryl",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 19,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "Non-drowsy options for allergy symptoms that may accompany a cold.",
-                            ProductName = "Zyrtec",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 20,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "for fever and associated symptoms",
-                            ProductName = "Aleve",
-                            ProductPrice = 17f
-                        },
-                        new
-                        {
-                            ProductId = 21,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "reduces fever",
-                            ProductName = "panadol",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 22,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = " Stimulate the pancreas to release more insulin.",
-                            ProductName = "Glibenclamide",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 23,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = " Reduce glucose reabsorption in the kidneys, leading to increased glucose excretion in the urine.",
-                            ProductName = "Canagliflozin",
-                            ProductPrice = 10f
-                        },
-                        new
-                        {
-                            ProductId = 24,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "to improve urine flow and reduce symptoms associated with BPH.",
-                            ProductName = "Flomax",
-                            ProductPrice = 15f
-                        },
-                        new
-                        {
-                            ProductId = 25,
-                            CategoryId = 4,
-                            ProductCategory = "medicine(with prescriptions)",
-                            ProductDescription = "for severe pain due to kidney stone",
-                            ProductName = "Oxycodone",
-                            ProductPrice = 15f
-                        });
                 });
 
             modelBuilder.Entity("CrystalMeds.Shared.Domain.Promotion", b =>
@@ -517,13 +300,21 @@ namespace CrystalMeds.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PromotionId"));
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<float?>("PromotionAmount")
+                        .IsRequired()
                         .HasColumnType("real");
 
                     b.Property<string>("PromotionName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("PromotionId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Promotions");
                 });
@@ -863,12 +654,21 @@ namespace CrystalMeds.Server.Migrations
             modelBuilder.Entity("CrystalMeds.Shared.Domain.Product", b =>
                 {
                     b.HasOne("CrystalMeds.Shared.Domain.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
+                        .WithOne("Product")
+                        .HasForeignKey("CrystalMeds.Shared.Domain.Product", "CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("CrystalMeds.Shared.Domain.Promotion", b =>
+                {
+                    b.HasOne("CrystalMeds.Shared.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -924,7 +724,7 @@ namespace CrystalMeds.Server.Migrations
 
             modelBuilder.Entity("CrystalMeds.Shared.Domain.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }
