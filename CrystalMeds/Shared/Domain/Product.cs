@@ -18,8 +18,6 @@ namespace CrystalMeds.Shared.Domain
         [Required]
         [DataType(DataType.Currency)]
         public float ProductPrice { get; set; }
-        [Required]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = " Name doesnot meet length requirements")]
         public string ProductDescription { get; set; }
 		public string? ProductCategory { get; set; }
 		//public int? ProductQuantity { get; set; }

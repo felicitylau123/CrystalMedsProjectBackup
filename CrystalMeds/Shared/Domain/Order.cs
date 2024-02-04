@@ -11,8 +11,6 @@ namespace CrystalMeds.Shared.Domain
 	{
 		public int OrderId { get; set; }
 		public DateTime OrderDate { get; set; }
-        [Required]
-        [DataType(DataType.Currency)]
         public float? TotalPrice { get; set; }
 		public int ProductId { get; set; }
 		public virtual Product? Product { get; set; }

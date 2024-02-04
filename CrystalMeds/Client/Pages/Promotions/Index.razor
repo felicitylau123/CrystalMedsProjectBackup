@@ -7,7 +7,6 @@
 @using Microsoft.JSInterop
 @using System.Net.Http.Json
 @inject NavigationManager Navigation
-@page "/promotions"
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
@@ -31,7 +30,7 @@ else
                 <th>Promotion Name</th>
                 <th>Promotion Amount</th>
              @*    <th>Product Name</th> *@
-@*                 <th>Actions</th>
+                 @* <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -40,8 +39,8 @@ else
                 <tr>
                     <td>@promotion.PromotionName</td>
                     <td>@promotion.PromotionAmount</td>
-                   @*  <td>@promotion.ProductName</td> *@
-                  @*   <td>
+                    @* <td>@promotion.ProductName</td> *@ 
+                      @* <td>
                         <a href="/promotions/view/@promotion.PromotionId" class="btn btn-primary">
                             <span class="oi oi-eye"></span>
                         </a>
@@ -90,6 +89,4 @@ else
         _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#promotionsTable");
     }
-}
-
- *@
+}  *@

@@ -1,4 +1,4 @@
-﻿@* @page "/checkout"
+﻿@page "/selfpickup"
 @inject NavigationManager Navigation
 @inject HttpClient _client
 @inject IJSRuntime js
@@ -8,7 +8,10 @@
 <h3 class="card-title">Create new Pick Up</h3>
 <hr />
 <br />
-<EditForm Model="@pickup" OnValidSubmit="CreatePickUp">
+
+@code {
+}
+@* <EditForm Model="@pickup" OnValidSubmit="CreatePickUp">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group">
@@ -43,4 +46,5 @@
     }
 
 
-} *@
+}
+ *@

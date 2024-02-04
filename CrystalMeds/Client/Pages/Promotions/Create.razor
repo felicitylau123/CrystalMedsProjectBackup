@@ -50,8 +50,8 @@
     }
 
     private async Task CreatePromotion()
-    {
-        // Ensure that the selected product is not null
+    { *@
+       @*  // Ensure that the selected product is not null
         // if (promotion.ProductName != null)
         // {
         //     // Retrieve the selected product from the Products list
@@ -64,4 +64,4 @@
         await _client.PostAsJsonAsync(Endpoints.PromotionsEndpoint, promotion);
         _navManager.NavigateTo("/promotions/");
     }
-} *@ 
+} *@
